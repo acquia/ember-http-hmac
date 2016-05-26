@@ -40,10 +40,15 @@
     "loader.js": "^4.0.1"
   },
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "http-hmac",
+    "acquia"
   ],
   "dependencies": {
-    "ember-cli-babel": "^5.1.6"
+    "ember-browserify": "1.1.9",
+    "ember-cli-babel": "^5.1.6",
+    "ember-ajax": "0.7.1",
+    "http-hmac-javascript": "^0.1.2"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
