@@ -50,7 +50,7 @@
     "ember-browserify": "1.1.9",
     "ember-cli-babel": "^5.1.6",
     "ember-ajax": "0.7.1",
-    "http-hmac-javascript": "^0.1.2"
+    "http-hmac-javascript": "^0.1.6"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
