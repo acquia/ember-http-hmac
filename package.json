@@ -1,7 +1,9 @@
 {
   "name": "ember-http-hmac",
-  "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "version": "0.0.1",
+  "description": "Provides an Ember wrapper around Acquia's http-hmac-javascript
+  library.  Also provides services and mixins to help with signing and validating
+  requests.",
   "directories": {
     "doc": "doc",
     "test": "tests"
