@@ -1,6 +1,23 @@
 # Ember-http-hmac
 
-This README outlines the details of collaborating on this Ember addon.
+This addon provides an Ember integration for working with version 2.0 of the [HTTP HMAC Specification](https://github.com/acquia/http-hmac-spec/tree/2.0).  It wraps the [http-hmac-javascript JavaScript class](https://github.com/acquia/http-hmac-javascript) and exposes signing capabilites both as a mixin for [ember-data](https://github.com/emberjs/data) adapters and for signing individual [ember-ajax](https://github.com/ember-cli/ember-ajax) requests.
+
+## Using the ember-data adapter mixin
+coming soon
+
+## Using the ember-ajax service
+coming soon
+
+## Using the request-signer service directly
+coming soon
+
+## Installation
+
+### As an addon
+
+* `ember install ember-http-hmac`
+
+# For Development
 
 ## Installation
 
