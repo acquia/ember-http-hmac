@@ -1,9 +1,6 @@
 import Ember from 'ember';
 
 // This mixin provides http-hmac signing capabilities to an ember-data adapter.
-// The adapter must call the initializeSigner method with the configuration
-// for the signer including the realm, public and secret keys.
-// Once configured, all requests will be signed.
 // @todo : Implement response validation once there is access to the jqXHR
 // object in the response.
 // https://github.com/emberjs/data/issues/4404
