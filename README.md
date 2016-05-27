@@ -2,6 +2,9 @@
 
 This addon provides an Ember integration for working with version 2.0 of the [HTTP HMAC Specification](https://github.com/acquia/http-hmac-spec/tree/2.0).  It wraps the [http-hmac-javascript library](https://github.com/acquia/http-hmac-javascript) and exposes signing capabilites both as a mixin for [ember-data](https://github.com/emberjs/data) adapters and for signing individual [ember-ajax](https://github.com/ember-cli/ember-ajax) requests.
 
+## Configuration
+coming soon
+
 ## Using the ember-data adapter mixin
 coming soon
 
