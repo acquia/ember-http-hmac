@@ -2,18 +2,25 @@ import AcquiaHttpHmac from 'npm:http-hmac-javascript';
 import Ember from 'ember';
 
 export default Ember.Service.extend({
+  /**
+   * The authentication signer to utilize
+   * @type {AcquiaHttpHmac}
+   * @private
+   */
   signer: null,
 
   /**
    * An array of header names to check for in the request.  If they are present
    * they will be included as signed headers for the HMAC authentication.
    * @type {Array}
+   * @public
    */
   signedHeaders: [],
 
   /**
    * Sets up the signer with the required configuration.
    * @method  initializeSigner
+   * @public
    * @param  {Object} config Configuration data with at the following keys:
    *                         - realm
    *                         - public_key
@@ -29,6 +36,7 @@ export default Ember.Service.extend({
   /**
    * Signs a request.
    * @method  signRequest
+   * @public
    * @param  {Object} jqXhr  The jQuery jqXHR object that wraps the XMLHttpRequest
    * @param  {Object} params Signing parameters required by the http-hmac library
    *                         - method: the request method (verb)
@@ -56,6 +64,7 @@ export default Ember.Service.extend({
   /**
    * Validates a response from the server.
    * @method  validateResponse
+   * @public
    * @param {Object} request: The jQuery jqXHR request sent.
    * @return {boolean} True if valid, false otherwise.
    */

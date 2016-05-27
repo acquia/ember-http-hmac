@@ -40,7 +40,7 @@ test('it sends content type when available.', function(assert) {
     headers: {}
   });
   let expectedParameters = {
-    content_type: 'my-content-type',
+    content_type: 'my-content-type', // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
     path: 'my-url',
     method: 'GET'
   };
@@ -91,7 +91,7 @@ test('it preserves existing beforeSend callback', function(assert) {
 
   let AdapterMock = Ember.Object.extend(HmacAdapterMixin, {
     _super() {
-      return { 
+      return {
         type: 'GET',
         beforeSend(jqXhr, settings) {
           assert.ok(true, 'The pre-existing beforeSend callback was called.');
