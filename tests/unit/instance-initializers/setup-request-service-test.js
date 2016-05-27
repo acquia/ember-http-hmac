@@ -1,11 +1,11 @@
 import { test, module } from 'qunit';
-import InstanceInitializer from 'ember-http-hmac/instance-initializers/ember-http-hmac';
+import setupRequestService from 'ember-http-hmac/instance-initializers/setup-request-service';
 import RequestSigner from 'ember-http-hmac/services/request-signer';
 
-module('Unit | Instance Initializers | ember-http-hmac');
+module('Unit | Instance Initializers | setup-requets-service');
 
 test('it registers the signer', function(assert) {
-  assert.expect(6);
+  assert.expect(5);
 
   let expected = {
     realm: 'test-realm',
@@ -14,20 +14,17 @@ test('it registers the signer', function(assert) {
     signedHeaders: ['my-signed-header-a', 'my-signed-header-b']
   };
   let requestSigner = RequestSigner.create();
+  let environmentMock = {
+    'ember-http-hmac': expected
+  };
   let instanceMock = {
-    lookupFactory(factoryName) {
-      assert.equal(factoryName, 'config:environment', 'The environment is requested.');
-      return {
-        'ember-http-hmac': expected
-      };
-    },
     lookup(factoryName) {
-      assert.equal(factoryName, 'request-signer:main', 'The request signer is requested');
+      assert.equal(factoryName, 'service:request-signer', 'The request signer is requested');
       return requestSigner;
     }
   };
 
-  InstanceInitializer.initialize(instanceMock);
+  setupRequestService(instanceMock, environmentMock);
   assert.equal(requestSigner.get('realm'), expected.realm, 'Realm was set on service.');
   assert.equal(requestSigner.get('publicKey'), expected.publicKey, 'Public key was set on service.');
   assert.equal(requestSigner.get('secretKey'), expected.secretKey, 'Secret key was set on service.');

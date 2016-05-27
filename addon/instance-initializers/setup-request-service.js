@@ -1,8 +1,7 @@
 // Read any configuration values from the environment configuration and set on
 // the request signer service.
-export function initialize(instance) {
-  let config = instance.lookupFactory('config:environment');
-  let service = instance.lookup('request-signer:main');
+export default function setupRequestService(instance, config) {
+  let service = instance.lookup('service:request-signer');
 
   let addonOptions = config['ember-http-hmac'];
   if (addonOptions) {
@@ -15,8 +14,3 @@ export function initialize(instance) {
     });
   }
 }
-
-export default {
-  name: 'ember-http-hmac',
-  initialize
-};
