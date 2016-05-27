@@ -1,5 +1,5 @@
-import AcquiaHttpHmac from 'npm:http-hmac-javascript';
 import Ember from 'ember';
+const { AcquiaHttpHmac } = window;
 
 export default Ember.Service.extend({
   /**
