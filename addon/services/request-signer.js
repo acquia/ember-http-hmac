@@ -10,6 +10,27 @@ export default Ember.Service.extend({
   signer: null,
 
   /**
+   * The authentication realm to use for signing requests.
+   * @type {String}
+   * @public
+   */
+  realm: null,
+
+  /**
+   * The public key to use for signing requests.
+   * @type {String}
+   * @public
+   */
+  publicKey: null,
+
+  /**
+   * The secret key to use for signing requests.
+   * @type {String}
+   * @public
+   */
+  secretKey: null,
+
+  /**
    * An array of header names to check for in the request.  If they are present
    * they will be included as signed headers for the HMAC authentication.
    * @type {Array}
@@ -28,9 +49,26 @@ export default Ember.Service.extend({
    * @param {Array}   signedHeaders An array of header names that should be
    * included in the auth signature.
    */
-  initializeSigner(config, signed = []) {
-    this.set('signer', new AcquiaHttpHmac(config));
-    this.set('signedHeaders', signed);
+  initializeSigner() {
+    let realm = this.get('realm');
+    let publicKey = this.get('publicKey');
+    let secretKey = this.get('secretKey');
+
+    Ember.assert('The realm must be populated for http hmac authentication', !Ember.isEmpty(realm));
+    Ember.assert('The public key must be populated for http hmac authentication', !Ember.isEmpty(publicKey));
+    Ember.assert('The private key must be populated for http hmac authentication', !Ember.isEmpty(secretKey));
+
+    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+    let config = {
+      realm,
+      public_key: publicKey,
+      secret_key: secretKey
+    };
+    // jscs:enable
+
+    let signer = new AcquiaHttpHmac(config);
+    this.set('signer', signer);
+    return signer;
   },
 
   /**
@@ -45,7 +83,10 @@ export default Ember.Service.extend({
    * @param {Object} headers An object of headers for the request.
    */
   signRequest(jqXhr, params, headers) {
-    Ember.assert('The signer must be configured with initializeSigner prior to use.', !Ember.isEmpty(this.signer));
+    let signer = this.get('signer');
+    if (Ember.isEmpty(signer)) {
+      signer = this.initializeSigner();
+    }
     let signedHeaders = this.get('signedHeaders');
     params.request = jqXhr;
     // jscs: disable requireCamelCaseOrUpperCaseIdentifiers

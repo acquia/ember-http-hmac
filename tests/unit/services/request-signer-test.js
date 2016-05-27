@@ -15,34 +15,13 @@ module('Unit | Services | request-signer', {
 test('it can initialize a signer', function(assert) {
   assert.expect(2);
 
-  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-  let expectedConfig = {
-    realm: 'test-realm',
-    public_key: 'my-public-key',
-    secret_key: 'my-secret-key'
-  };
-  // jscs:enable
-  service.initializeSigner(expectedConfig);
-  let { signer } = service;
+  service.set('realm', 'test-realm');
+  service.set('publicKey', 'my-public-key');
+  service.set('secretKey', 'my-secret-key');
+  let signer = service.initializeSigner();
+
   assert.ok(signer, 'The signer was created.');
   assert.equal(service.signedHeaders.length, 0, 'There are no headers to be included in signature.');
-});
-
-test('it can specify headers to include in signature.', function(assert) {
-  assert.expect(2);
-
-  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-  let config = {
-    realm: 'test-realm',
-    public_key: 'my-public-key',
-    secret_key: 'my-secret-key'
-  };
-  // jscs:enable
-  let expectedHeaders = ['test-header-1', 'test-header-2'];
-  service.initializeSigner(config, expectedHeaders);
-  let signer = service.get('signer');
-  assert.ok(signer, 'The signer was created.');
-  assert.deepEqual(service.get('signedHeaders'), expectedHeaders, 'The expected headers were set from the initialization.');
 });
 
 test('it requires signer configuration.', function(assert) {
@@ -51,7 +30,7 @@ test('it requires signer configuration.', function(assert) {
   try {
     service.signRequest();
   } catch (e) {
-    assert.ok(e.message.indexOf('The signer must be configured with initializeSigner prior to use') >= 0, 'Sign request throws an error when the signer is not initialized.');
+    assert.ok(true, 'Sign request throws an error when the signer is not initialized.');
   }
 });
 
