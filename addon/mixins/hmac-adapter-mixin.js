@@ -5,6 +5,9 @@ import Ember from 'ember';
  * The adapter must call the initializeSigner method with the configuration
  * for the signer including the realm, public and secret keys.
  * Once configured, all requests will be signed.
+ * @todo : Implement response validation once there is access to the jqXHR
+ * object in the response.
+ * https://github.com/emberjs/data/issues/4404
  */
 export default Ember.Mixin.create({
   requestSigner: Ember.inject.service(),
@@ -33,28 +36,9 @@ export default Ember.Mixin.create({
       signer.signRequest(jqXhr, signParameters, this.get('headers'));
 
       if (beforeSend) {
-        beforeSend(...arguments);
+        beforeSend(jqXhr, settings);
       }
     };
     return hash;
-  }//,
-
-  /**
-   * Overrides DS.RESTAdapter.handleResponse to check for a valid signature.
-   * @method  handleResponse
-   * @todo : This should be implemented once there is access to the jqXHR
-   * object in the response.
-   * https://github.com/emberjs/data/issues/4404
-  handleResponse(status, headers, payload, request) {
-    let handled = this._super(...arguments);
-    if (handled instanceof AdapterError) {
-      return handled;
-    }
-    if (this.get('requestSigner').validateResponse(request.jqXHR)) {
-      return handled;
-    }
-    // Invalid signature
-    return new AdapterError(null, 'Invalid authorization signature');
   }
-   */
 });
