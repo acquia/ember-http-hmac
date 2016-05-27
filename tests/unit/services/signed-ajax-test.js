@@ -1,12 +1,17 @@
+import Ember from 'ember';
 import Pretender from 'pretender';
-import { test, moduleForComponent } from 'ember-qunit';
+import { test, module } from 'qunit';
+import SignedAjax from 'ember-http-hmac/services/signed-ajax';
 
-moduleForComponent('service:signed-ajax', 'Unit | Services | signed-ajax', {
+let service, server;
+module('Unit | Services | signed-ajax', {
   beforeEach() {
-    this.server = new Pretender();
+    service = SignedAjax.create();
+    server = new Pretender();
   },
   afterEach() {
-    this.server.shutdown();
+    server.shutdown();
+    Ember.run(service, 'destroy');
   }
 });
 
@@ -21,12 +26,13 @@ test('it signs requests with no options', function(assert) {
       jqXhr.setRequestHeader('Authorization', 'test-auth');
     }
   };
-  this.server.get('example.com', (req) => {
+  server.get('example.com', (req) => {
     assert.ok(true, 'Ajax request was sent.');
     assert.equal(req.requestHeaders.Authorization, 'test-auth', 'Authorization header was sent with request.');
   });
 
-  this.subject({ requestSigner: mockRequestSigner }).request('example.com');
+  service.set('requetSigner', mockRequestSigner);
+  service.request('example.com');
 });
 
 test('it signs requests with options', function(assert) {
@@ -40,13 +46,14 @@ test('it signs requests with options', function(assert) {
       jqXhr.setRequestHeader('Authorization', 'test-auth');
     }
   };
-  this.server.get('example.com', (req) => {
+  server.get('example.com', (req) => {
     assert.ok(true, 'Ajax request was sent.');
     assert.equal(req.requestHeaders.Authorization, 'test-auth', 'Authorization header was sent with request.');
     assert.equal(req.requestHeaders['test-header'], 'test-header-value', 'Other headers were preserved and sent with request.');
   });
 
-  this.subject({ requestSigner: mockRequestSigner }).request('example.com', {
+  service.set('requestSigner', mockRequestSigner);
+  service.request('example.com', {
     headers: { 'test-header': 'test-header-value' }
   });
 });
@@ -59,7 +66,7 @@ test('it preserves specified beforeSend callbacks', function(assert) {
       assert.ok(true, 'SignRequest was called.');
     }
   };
-  this.server.get('example.com', () => {
+  server.get('example.com', () => {
     assert.ok(true, 'Ajax request was sent.');
   });
   let mockBeforeSend = (jqXhr, settings) => {
@@ -68,5 +75,6 @@ test('it preserves specified beforeSend callbacks', function(assert) {
     assert.equal(settings.url, 'example.com', 'Settings were passed to callback.');
   };
 
-  this.subject({ requestSigner: mockRequestSigner }).request('example.com', { beforeSend: mockBeforeSend });
+  service.set('requestSigner', mockRequestSigner);
+  service.request('example.com', { beforeSend: mockBeforeSend });
 });
