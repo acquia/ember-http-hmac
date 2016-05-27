@@ -18,9 +18,12 @@ export default Ember.Service.extend({
    *                         - realm
    *                         - public_key
    *                         - secret_key
+   * @param {Array}   signedHeaders An array of header names that should be
+   * included in the auth signature.
    */
-  initializeSigner(config) {
-    this.signer = new AcquiaHttpHmac(config);
+  initializeSigner(config, signed = []) {
+    this.set('signer', new AcquiaHttpHmac(config));
+    this.set('signedHeaders', signed);
   },
 
   /**
