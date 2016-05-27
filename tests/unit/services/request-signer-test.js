@@ -13,7 +13,7 @@ module('Unit | Services | request-signer', {
 });
 
 test('it can initialize a signer', function(assert) {
-  assert.expect(5);
+  assert.expect(2);
 
   // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
   let expectedConfig = {
@@ -23,12 +23,9 @@ test('it can initialize a signer', function(assert) {
   };
   // jscs:enable
   service.initializeSigner(expectedConfig);
-  let signer = service.get('signer');
+  let { signer } = service;
   assert.ok(signer, 'The signer was created.');
-  assert.equal(signer.config.realm, expectedConfig.realm, 'The realm was configured.');
-  assert.equal(signer.config.public_key, expectedConfig.public_key, 'The public key was configured.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-  assert.equal(signer.config.secret_key, expectedConfig.realm, 'The secret key was configured.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-  assert.equal(service.get('signedHeaders.length'), 0, 'There are no headers to be included in signature.');
+  assert.equal(service.signedHeaders.length, 0, 'There are no headers to be included in signature.');
 });
 
 test('it can specify headers to include in signature.', function(assert) {
@@ -51,7 +48,11 @@ test('it can specify headers to include in signature.', function(assert) {
 test('it requires signer configuration.', function(assert) {
   assert.expect(1);
 
-  assert.throws(service.signRequest(), 'The signer must be configured with initializeSigner prior to use.', 'Sign request throws an error when the signer is not initialized.');
+  try {
+    service.signRequest();
+  } catch (e) {
+    assert.ok(e.message.indexOf('The signer must be configured with initializeSigner prior to use') >= 0, 'Sign request throws an error when the signer is not initialized.');
+  }
 });
 
 test('it signs a request without special headers.', function(assert) {
@@ -60,7 +61,7 @@ test('it signs a request without special headers.', function(assert) {
   let signerMock = {
     sign(params) {
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
-      assert.notOk(params.signed_header, 'No headers are included for the signature.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
       assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
     }
   };
@@ -74,12 +75,12 @@ test('it includes signed headers when present.', function(assert) {
   let signerMock = {
     sign(params) {
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
-      assert.deepEqual(params.signed_header, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.deepEqual(params.signed_headers, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
       assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
     }
   };
   service.set('signer', signerMock);
-  service.set('signedHeader', ['my-signed-header']);
+  service.set('signedHeaders', ['my-signed-header']);
   let headers = {
     'header-1': 'header-1-value',
     'my-signed-header': 'my-signed-header-value'
@@ -93,7 +94,7 @@ test('it signs requests when signed headers are not present.', function(assert) 
   let signerMock = {
     sign(params) {
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
-      assert.notOk(params.signed_header, 'No headers are included for the signature.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
       assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
     }
   };
