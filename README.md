@@ -68,8 +68,8 @@ The basic signing functionality used by both the `signed-ajax` service and the `
 ## Installation
 
 ### As an addon
-
-* `ember install ember-http-hmac`
+Until the addon is published publically it can be installed directly from this repository.
+* `ember install git+ssh://git@github.com:acquia/ember-http-hmac.git`
 
 # For Development
 
