@@ -1,4 +1,4 @@
-# Ember-http-hmac
+# Ember-http-hmac [![Build Status](https://travis-ci.com/acquia/ember-http-hmac.svg?token=xpbhY9xz7Z9aqH5aUfgP&branch=master)](https://travis-ci.com/acquia/ember-http-hmac)
 
 This addon provides an Ember integration for working with version 2.0 of the [HTTP HMAC Specification](https://github.com/acquia/http-hmac-spec/tree/2.0).  It wraps the [http-hmac-javascript library](https://github.com/acquia/http-hmac-javascript) and exposes signing capabilites both as a mixin for [ember-data](https://github.com/emberjs/data) adapters and for signing individual [ember-ajax](https://github.com/ember-cli/ember-ajax) requests.
 
