@@ -8,7 +8,7 @@ var Funnel = require('broccoli-funnel');
 module.exports = {
   name: 'ember-http-hmac',
 
-  treeForVendor: function(tree) {
+  treeForVendor: function(inputTree) {
     var httpPackagePath = path.dirname(require.resolve('http-hmac-javascript'));
     var httpPackageTree = new Funnel(this.treeGenerator(httpPackagePath), {
       srcDir: '/',
@@ -19,7 +19,11 @@ module.exports = {
       srcDir: '/',
       destDir: 'crypto-js'
     });
-    return mergeTrees([tree, httpPackageTree, cryptoPackageTree]);
+    var trees = [httpPackageTree, cryptoPackageTree];
+    if (inputTree) {
+      trees.push(inputTree);
+    }
+    return mergeTrees(trees);
   },
 
   included: function(app) {
