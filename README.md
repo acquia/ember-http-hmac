@@ -71,6 +71,11 @@ The basic signing functionality used by both the `signed-ajax` service and the `
 Until the addon is published publically it can be installed directly from this repository.
 * `ember install git+ssh://git@github.com:acquia/ember-http-hmac.git`
 
+# To Dos
+* Create a test helper to register support
+* Add configuration to disable signed headers
+* Add configuration to enable/disable per environment
+
 # For Development
 
 ## Installation
