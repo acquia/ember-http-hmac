@@ -99,7 +99,7 @@ export default Ember.Service.extend({
       });
     }
     // jscs: enable
-    this.get('signer').sign(params);
+    signer.sign(params);
   },
 
   /**
