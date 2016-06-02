@@ -34,7 +34,11 @@ export default Ember.Mixin.create({
 
     hash.beforeSend = (jqXhr, settings) => {
       signParameters.path = settings.url;
-      signer.signRequest(jqXhr, signParameters, this.get('headers'));
+      try {
+        signer.signRequest(jqXhr, signParameters, this.get('headers'));
+      } catch (e) {
+        return false;
+      }
 
       if (beforeSend) {
         beforeSend(jqXhr, settings);

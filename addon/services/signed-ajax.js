@@ -34,7 +34,11 @@ export default AjaxService.extend({
 
     options.beforeSend = (jqXhr, settings) => {
       signParameters.path = settings.url;
-      signer.signRequest(jqXhr, signParameters, headers);
+      try {
+        signer.signRequest(jqXhr, signParameters, headers);
+      } catch (e) {
+        return false;
+      }
 
       if (beforeSend) {
         beforeSend(...arguments);
