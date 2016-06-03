@@ -19,31 +19,7 @@ export default Ember.Mixin.create({
    */
   ajaxOptions() {
     let signer = this.get('requestSigner');
-
     let hash = this._super(...arguments);
-    let { beforeSend } = hash;
-
-    // jscs: disable requireCamelCaseOrUpperCaseIdentifiers
-    let signParameters = {
-      method: hash.type
-    };
-    if (hash.hasOwnProperty('contentType')) {
-      signParameters.content_type = hash.contentType;
-    }
-    // jscs: enable
-
-    hash.beforeSend = (jqXhr, settings) => {
-      signParameters.path = settings.url;
-      try {
-        signer.signRequest(jqXhr, signParameters, this.get('headers'));
-      } catch (e) {
-        return false;
-      }
-
-      if (beforeSend) {
-        beforeSend(jqXhr, settings);
-      }
-    };
-    return hash;
+    return signer.updateAjaxOptions(hash, this.get('headers'));
   }
 });

@@ -23,28 +23,8 @@ export default AjaxService.extend({
       options = {};
     }
     let signer = this.get('requestSigner');
-    let beforeSend = options.beforeSend || null;
     let headers = options.headers || {};
-
-    // jscs: disable requireCamelCaseOrUpperCaseIdentifiers
-    let signParameters = {
-      method: options.type || 'GET'
-    };
-    // jscs: enable
-
-    options.beforeSend = (jqXhr, settings) => {
-      signParameters.path = settings.url;
-      try {
-        signer.signRequest(jqXhr, signParameters, headers);
-      } catch (e) {
-        return false;
-      }
-
-      if (beforeSend) {
-        beforeSend(...arguments);
-      }
-    };
-
-    return this._super(url, options);
+    let signedOptions = signer.updateAjaxOptions(options, headers);
+    return this._super(url, signedOptions);
   }
 });

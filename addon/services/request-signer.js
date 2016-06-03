@@ -72,6 +72,45 @@ export default Ember.Service.extend({
   },
 
   /**
+   * Updates the ajax options for signing a request.
+   * @method  updateAjaxOptions
+   * @protected
+   * @param {Object} hash    The ajax options hash
+   * @param {Object} headers Any headers to be included with the request
+   * @return {Object} The updated hash - also modified by reference.
+   */
+  updateAjaxOptions(hash, headers) {
+    if (!hash) {
+      hash = {};
+    }
+
+    let { beforeSend } = hash;
+    let signParameters = {
+      method: hash.type || 'GET'
+    };
+    if (hash.hasOwnProperty('contentType')) {
+      signParameters.content_type = hash.contentType; // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+    }
+
+    hash.beforeSend = (jqXhr, settings) => {
+      signParameters.path = settings.url;
+      if (!Ember.isEmpty(settings.data)) {
+        signParameters.body = settings.data;
+      }
+      try {
+        this.signRequest(jqXhr, signParameters, headers);
+      } catch (e) {
+        return false;
+      }
+
+      if (beforeSend) {
+        beforeSend(jqXhr, settings);
+      }
+    };
+    return hash;
+  },
+
+  /**
    * Signs a request.
    * @method  signRequest
    * @public

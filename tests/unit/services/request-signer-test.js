@@ -85,6 +85,98 @@ test('it signs requests when signed headers are not present.', function(assert) 
   service.signRequest('mock-jqxhr', { foo: 'bar' }, headers);
 });
 
+test('it can add signing to beforeSend', function(assert) {
+  assert.expect(5);
+
+  let signerMock = {
+    sign(params) {
+      assert.ok(true, 'Signer was invoked before send.');
+      assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign.');
+      assert.equal(params.path, 'test-url', 'URL was sent as a parameter to sign.');
+      assert.equal(params.method, 'GET', 'It sends the default method to signer.');
+    }
+  };
+
+  service.set('signer', signerMock);
+  let hash = service.updateAjaxOptions();
+  assert.ok(hash.beforeSend, 'Before send function was added to hash');
+  hash.beforeSend('mock-jqxhr', { url: 'test-url' });
+});
+
+test('it sends content type to signer when available', function(assert) {
+  assert.expect(3);
+
+  let signerMock = {
+    sign(params) {
+      assert.ok(true, 'Signer was invoked before send.');
+      assert.equal(params.method, 'POST', 'It sends the content type to signer.');
+    }
+  };
+
+  service.set('signer', signerMock);
+  let hash = service.updateAjaxOptions({ type: 'POST' });
+  assert.ok(hash.beforeSend, 'Before send function was added to hash');
+  hash.beforeSend('mock-jqxhr', { url: 'test-url' });
+});
+
+test('it sends headers when available and configured', function(assert) {
+  assert.expect(5);
+
+  let allHeaders = {
+    'mahna-mahna': 'dodoodododo',
+    'marvin-suggs': 'owwww'
+  };
+
+  let signerMock = {
+    sign(params) {
+      assert.ok(true, 'Signer was invoked before send.');
+      assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign.');
+      assert.equal(params.signed_headers['marvin-suggs'], 'owwww', 'Signed header value was sent.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.notOk(params.signed_headers['mahna-mahna'], 'Unsigned header value was not sent.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+    }
+  };
+
+  service.set('signer', signerMock);
+  service.set('signedHeaders', ['marvin-suggs']);
+  let hash = service.updateAjaxOptions({}, allHeaders);
+  assert.ok(hash.beforeSend, 'Before send function was added to hash');
+  hash.beforeSend('mock-jqxhr', { url: 'test-url' });
+});
+
+test('it sends body when available', function(assert) {
+  assert.expect(3);
+
+  let signerMock = {
+    sign(params) {
+      assert.ok(true, 'Signer was invoked before send.');
+      assert.equal(params.body, 'moving right along', 'It sends the body to signer.');
+    }
+  };
+
+  service.set('signer', signerMock);
+  let hash = service.updateAjaxOptions();
+  assert.ok(hash.beforeSend, 'Before send function was added to hash');
+  hash.beforeSend('mock-jqxhr', { url: 'test-url', data: 'moving right along' });
+});
+
+test('it preserves existing beforeSend callback', function(assert) {
+  let hash = {
+    beforeSend(jqXHR, settings) {
+      assert.ok(true, 'The pre-existing beforeSend callback was called.');
+      assert.equal(jqXHR, 'mock-jqxhr', 'The request was passed to the callback.');
+      assert.deepEqual(settings, { url: 'my-url' }, 'The settings were passed to the callback.');
+    }
+  };
+  let signerMock = {
+    sign() {
+      assert.ok(true, 'Signer was invoked before send.');
+    }
+  };
+  service.set('signer', signerMock);
+  service.updateAjaxOptions(hash);
+  hash.beforeSend('mock-jqxhr', { url: 'my-url' });
+});
+
 test('it can validate the response from a request.', function(assert) {
   assert.expect(2);
 

@@ -37,5 +37,9 @@ module.exports = {
   importDependencies: function(app) {
     app.import('vendor/crypto-js/crypto-js.js');
     app.import('vendor/http-hmac-javascript/hmac.min.js');
+  },
+
+  isDevelopingAddon: function() {
+    return true;
   }
 };
