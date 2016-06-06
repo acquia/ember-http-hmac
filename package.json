@@ -53,7 +53,7 @@
   "dependencies": {
     "crypto-js": "^3.1.6",
     "ember-ajax": "0.7.1",
-    "http-hmac-javascript": "^0.2.0",
+    "http-hmac-javascript": "^0.1.9",
     "broccoli-funnel": "^1.0.1",
     "broccoli-merge-trees": "^1.1.1"
   },
