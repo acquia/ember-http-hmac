@@ -24,6 +24,46 @@ test('it can initialize a signer', function(assert) {
   assert.equal(service.signedHeaders.length, 0, 'There are no headers to be included in signature.');
 });
 
+test('it can retire current signer if realm, publicKey, or secretKey is set again', function(assert) {
+  assert.expect(9);
+
+  service.set('realm', 'test-realm');
+  service.set('publicKey', 'my-public-key');
+  service.set('secretKey', 'my-secret-key');
+
+  let signer;
+
+  service.initializeSigner();
+  signer = service.get('signer');
+  assert.ok(signer, 'The signer was created.');
+  service.set('realm', 'test-realm');
+  signer = service.get('signer');
+  assert.ok(signer, 'The signer was NOT retired when same realm is set.');
+  service.set('realm', 'new-test-realm');
+  signer = service.get('signer');
+  assert.notOk(signer, 'The signer was retired when new realm is set.');
+
+  service.initializeSigner();
+  signer = service.get('signer');
+  assert.ok(signer, 'The signer was created.');
+  service.set('publicKey', 'my-public-key');
+  signer = service.get('signer');
+  assert.ok(signer, 'The signer was NOT retired when same public key is set.');
+  service.set('publicKey', 'new-public-key');
+  signer = service.get('signer');
+  assert.notOk(signer, 'The signer was retired when new public key is set.');
+
+  service.initializeSigner();
+  signer = service.get('signer');
+  assert.ok(signer, 'The signer was created.');
+  service.set('secretKey', 'my-secret-key');
+  signer = service.get('signer');
+  assert.ok(signer, 'The signer was NOT retired when same secret key is set.');
+  service.set('secretKey', 'new-secret-key');
+  signer = service.get('signer');
+  assert.notOk(signer, 'The signer was retired when new secret key is set.');
+});
+
 test('it requires signer configuration.', function(assert) {
   assert.expect(1);
 

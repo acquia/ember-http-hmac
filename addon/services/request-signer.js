@@ -14,21 +14,81 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  realm: null,
+  realm: Ember.computed('_realm', {
+    get() {
+      return this.get('_realm');
+    },
+    set(key, value) {
+      return this._updateSignerDependency('_realm', value);
+    }
+  }),
+
+  /**
+   * Stores the current realm.
+   * @type {String}
+   * @private
+   */
+  _realm: null,
 
   /**
    * The public key to use for signing requests.
    * @type {String}
    * @public
    */
-  publicKey: null,
+  publicKey: Ember.computed('_publicKey', {
+    get() {
+      return this.get('_publicKey');
+    },
+    set(key, value) {
+      return this._updateSignerDependency('_publicKey', value);
+    }
+  }),
+
+  /**
+   * Stores the current public key.
+   * @type {String}
+   * @private
+   */
+  _publicKey: null,
 
   /**
    * The secret key to use for signing requests.
    * @type {String}
    * @public
    */
-  secretKey: null,
+  secretKey: Ember.computed('_secretKey', {
+    get() {
+      return this.get('_secretKey');
+    },
+    set(key, value) {
+      return this._updateSignerDependency('_secretKey', value);
+    }
+  }),
+
+  /**
+   * Stores the current secret key.
+   * @type {String}
+   * @private
+   */
+  _secretKey: null,
+
+  /**
+   * Helper function to update a property that invalidates the signer.
+   * @method  _updateSignerDependency
+   * @private
+   * @param  {String} propertyName The internal property storage name
+   * @param  {any} value           The newly requested value
+   * @return {any}                 The updated value
+   */
+  _updateSignerDependency(propertyName, value) {
+    let current = this.get(propertyName);
+    if (value === current) {
+      return current;
+    }
+    this.set('signer', null);
+    this.set(propertyName, value);
+    return value;
+  },
 
   /**
    * An array of header names to check for in the request.  If they are present
