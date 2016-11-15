@@ -14,14 +14,12 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  realm: Ember.computed({
+  realm: Ember.computed('_realm', {
+    get() {
+      return this.get('_realm');
+    },
     set(key, value) {
-      if (value === this.get('_realm')) {
-        return;
-      }
-      // If realm is updated, retire the current signer.
-      this.set('signer', null);
-      this.set('_realm', value);
+      return this._updateSignerDependency('_realm', value);
     }
   }),
 
@@ -37,14 +35,12 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  publicKey: Ember.computed({
+  publicKey: Ember.computed('_publicKey', {
+    get() {
+      return this.get('_publicKey');
+    },
     set(key, value) {
-      if (value === this.get('_publicKey')) {
-        return;
-      }
-      // If public key is updated, retire the current signer.
-      this.set('signer', null);
-      this.set('_publicKey', value);
+      return this._updateSignerDependency('_publicKey', value);
     }
   }),
 
@@ -60,14 +56,12 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  secretKey: Ember.computed({
+  secretKey: Ember.computed('_secretKey', {
+    get() {
+      return this.get('_secretKey');
+    },
     set(key, value) {
-      if (value === this.get('_secretKey')) {
-        return;
-      }
-      // If secret key is updated, retire the current signer.
-      this.set('signer', null);
-      this.set('_secretKey', value);
+      return this._updateSignerDependency('_secretKey', value);
     }
   }),
 
@@ -77,6 +71,24 @@ export default Ember.Service.extend({
    * @private
    */
   _secretKey: null,
+
+  /**
+   * Helper function to update a property that invalidates the signer.
+   * @method  _updateSignerDependency
+   * @private
+   * @param  {String} propertyName The internal property storage name
+   * @param  {any} value           The newly requested value
+   * @return {any}                 The updated value
+   */
+  _updateSignerDependency(propertyName, value) {
+    let current = this.get(propertyName);
+    if (value === current) {
+      return current;
+    }
+    this.set('signer', null);
+    this.set(propertyName, value);
+    return value;
+  },
 
   /**
    * An array of header names to check for in the request.  If they are present
@@ -98,9 +110,9 @@ export default Ember.Service.extend({
    * included in the auth signature.
    */
   initializeSigner() {
-    let realm = this.get('_realm');
-    let publicKey = this.get('_publicKey');
-    let secretKey = this.get('_secretKey');
+    let realm = this.get('realm');
+    let publicKey = this.get('publicKey');
+    let secretKey = this.get('secretKey');
 
     Ember.assert('The realm must be populated for http hmac authentication', !Ember.isEmpty(realm));
     Ember.assert('The public key must be populated for http hmac authentication', !Ember.isEmpty(publicKey));
