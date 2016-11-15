@@ -25,8 +25,8 @@ test('it registers the signer', function(assert) {
   };
 
   setupRequestService(instanceMock, environmentMock);
-  assert.equal(requestSigner.get('realm'), expected.realm, 'Realm was set on service.');
-  assert.equal(requestSigner.get('publicKey'), expected.publicKey, 'Public key was set on service.');
-  assert.equal(requestSigner.get('secretKey'), expected.secretKey, 'Secret key was set on service.');
+  assert.equal(requestSigner.get('_realm'), expected.realm, 'Realm was set on service.');
+  assert.equal(requestSigner.get('_publicKey'), expected.publicKey, 'Public key was set on service.');
+  assert.equal(requestSigner.get('_secretKey'), expected.secretKey, 'Secret key was set on service.');
   assert.equal(requestSigner.get('signedHeaders'), expected.signedHeaders, 'Signed headers were set on service.');
 });
