@@ -2,13 +2,17 @@ import { test, module } from 'qunit';
 import Ember from 'ember';
 import RequestSigner from 'ember-http-hmac/services/request-signer';
 
+const {
+  run
+} = Ember;
+
 let service;
 module('Unit | Services | request-signer', {
   beforeEach() {
     service = RequestSigner.create();
   },
   afterEach() {
-    Ember.run(service, 'destroy');
+    run(service, 'destroy');
   }
 });
 

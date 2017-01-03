@@ -3,12 +3,16 @@ import HmacAdapterMixin from 'ember-http-hmac/mixins/hmac-adapter-mixin';
 import { module, test } from 'qunit';
 import RequestSigner from 'ember-http-hmac/services/request-signer';
 
+const {
+  Object: EmberObject
+} = Ember;
+
 module('Unit | Mixins | hmac-adapter-mixin');
 
 test('it signs requests before sending.', function(assert) {
   assert.expect(4);
 
-  let AdapterMock = Ember.Object.extend(HmacAdapterMixin, {
+  let AdapterMock = EmberObject.extend(HmacAdapterMixin, {
     _super() {
       return { type: 'GET' };
     },
@@ -37,7 +41,7 @@ test('it sends headers when set on the adapter.', function(assert) {
   let mockHeaders = {
     'my-test-header': 'my-header-value'
   };
-  let AdapterMock = Ember.Object.extend(HmacAdapterMixin, {
+  let AdapterMock = EmberObject.extend(HmacAdapterMixin, {
     _super() {
       return { type: 'GET' };
     },

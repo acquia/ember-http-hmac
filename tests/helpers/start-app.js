@@ -5,10 +5,10 @@ import config from '../../config/environment';
 export default function startApp(attrs) {
   let application;
 
-  let attributes = Ember.merge({}, config.APP);
-  attributes = Ember.merge(attributes, attrs); // use defaults, but you can override;
+  // use defaults, but you can override
+  let attributes = Ember.assign({}, config.APP, attrs); // jscs:ignore disallowDirectPropertyAccess
 
-  Ember.run(() => {
+  Ember.run(() => { // jscs:ignore disallowDirectPropertyAccess
     application = Application.create(attributes);
     application.setupForTesting();
     application.injectTestHelpers();

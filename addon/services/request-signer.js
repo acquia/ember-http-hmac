@@ -1,7 +1,13 @@
 import Ember from 'ember';
 const { AcquiaHttpHmac } = window;
+const {
+  assert,
+  computed,
+  isEmpty,
+  Service
+} = Ember;
 
-export default Ember.Service.extend({
+export default Service.extend({
   /**
    * The authentication signer to utilize
    * @type {AcquiaHttpHmac}
@@ -14,7 +20,7 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  realm: Ember.computed('_realm', {
+  realm: computed('_realm', {
     get() {
       return this.get('_realm');
     },
@@ -35,7 +41,7 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  publicKey: Ember.computed('_publicKey', {
+  publicKey: computed('_publicKey', {
     get() {
       return this.get('_publicKey');
     },
@@ -56,7 +62,7 @@ export default Ember.Service.extend({
    * @type {String}
    * @public
    */
-  secretKey: Ember.computed('_secretKey', {
+  secretKey: computed('_secretKey', {
     get() {
       return this.get('_secretKey');
     },
@@ -114,9 +120,9 @@ export default Ember.Service.extend({
     let publicKey = this.get('publicKey');
     let secretKey = this.get('secretKey');
 
-    Ember.assert('The realm must be populated for http hmac authentication', !Ember.isEmpty(realm));
-    Ember.assert('The public key must be populated for http hmac authentication', !Ember.isEmpty(publicKey));
-    Ember.assert('The private key must be populated for http hmac authentication', !Ember.isEmpty(secretKey));
+    assert('The realm must be populated for http hmac authentication', !isEmpty(realm));
+    assert('The public key must be populated for http hmac authentication', !isEmpty(publicKey));
+    assert('The private key must be populated for http hmac authentication', !isEmpty(secretKey));
 
     // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     let config = {
@@ -154,7 +160,7 @@ export default Ember.Service.extend({
 
     hash.beforeSend = (jqXhr, settings) => {
       signParameters.path = settings.url;
-      if (!Ember.isEmpty(settings.data)) {
+      if (!isEmpty(settings.data)) {
         signParameters.body = settings.data;
       }
       try {
@@ -183,13 +189,13 @@ export default Ember.Service.extend({
    */
   signRequest(jqXhr, params, headers) {
     let signer = this.get('signer');
-    if (Ember.isEmpty(signer)) {
+    if (isEmpty(signer)) {
       signer = this.initializeSigner();
     }
     let signedHeaders = this.get('signedHeaders');
     params.request = jqXhr;
     // jscs: disable requireCamelCaseOrUpperCaseIdentifiers
-    if (!Ember.isEmpty(headers) && !Ember.isEmpty(signedHeaders)) {
+    if (!isEmpty(headers) && !isEmpty(signedHeaders)) {
       params.signed_headers = {};
       signedHeaders.forEach((headerName) => {
         if (headers.hasOwnProperty(headerName)) {
@@ -209,7 +215,7 @@ export default Ember.Service.extend({
    * @return {boolean} True if valid, false otherwise.
    */
   validateResponse(request) {
-    Ember.assert('The signer must be configured with initializeSigner prior to use.', !Ember.isEmpty(this.signer));
+    assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(this.signer));
     return this.get('signer').hasValidResponse(request);
   }
 });

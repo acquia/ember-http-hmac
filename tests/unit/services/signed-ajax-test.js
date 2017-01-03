@@ -5,6 +5,8 @@ import SignedAjax from 'ember-http-hmac/services/signed-ajax';
 import RequestSigner from 'ember-http-hmac/services/request-signer';
 import { jsonResponse } from '../../helpers/json';
 
+const { run } = Ember;
+
 let service, server;
 module('Unit | Services | signed-ajax', {
   beforeEach() {
@@ -13,7 +15,7 @@ module('Unit | Services | signed-ajax', {
   },
   afterEach() {
     server.shutdown();
-    Ember.run(service, 'destroy');
+    run(service, 'destroy');
   }
 });
 
@@ -23,19 +25,19 @@ test('it signs requests with no options', function(assert) {
   let RequestSignerMock = RequestSigner.extend({
     signRequest(jqXhr, signParameters, headers) {
       assert.equal(signParameters.method, 'GET', 'Method passed to sign request.');
-      assert.equal(signParameters.path, 'example.com', 'Url passed to sign request.');
+      assert.equal(signParameters.path, '/example.com', 'Url passed to sign request.');
       assert.deepEqual(headers, {}, 'Headers are passed in as empty.');
       jqXhr.setRequestHeader('Authorization', 'test-auth');
     }
   });
-  server.get('example.com', (req) => {
+  server.get('/example.com', (req) => {
     assert.ok(true, 'Ajax request was sent.');
     assert.equal(req.requestHeaders.Authorization, 'test-auth', 'Authorization header was sent with request.');
     return jsonResponse();
   });
 
   service.requestSigner = RequestSignerMock.create();
-  service.request('example.com');
+  service.request('/example.com');
 });
 
 test('it signs requests with options', function(assert) {
@@ -45,12 +47,12 @@ test('it signs requests with options', function(assert) {
   let RequestSignerMock = RequestSigner.extend({
     signRequest(jqXhr, signParameters, headers) {
       assert.equal(signParameters.method, 'GET', 'Method passed to sign request.');
-      assert.equal(signParameters.path, 'example.com', 'Url passed to sign request.');
+      assert.equal(signParameters.path, '/example.com', 'Url passed to sign request.');
       assert.deepEqual(headers, mockHeaders, 'Headers are passed in as empty.');
       jqXhr.setRequestHeader('Authorization', 'test-auth');
     }
   });
-  server.get('example.com', (req) => {
+  server.get('/example.com', (req) => {
     assert.ok(true, 'Ajax request was sent.');
     assert.equal(req.requestHeaders.Authorization, 'test-auth', 'Authorization header was sent with request.');
     assert.equal(req.requestHeaders['test-header'], 'test-header-value', 'Other headers were preserved and sent with request.');
@@ -58,7 +60,7 @@ test('it signs requests with options', function(assert) {
   });
 
   service.requestSigner = RequestSignerMock.create();
-  service.request('example.com', {
+  service.request('/example.com', {
     headers: mockHeaders
   });
 });
