@@ -15,7 +15,10 @@
   "engines": {
     "node": ">= 0.12.0"
   },
-  "author": "Acquia Lift Engineering",
+  "author": {
+    "name": "Acquia Engineering",
+    "email": "engineering@acquia.com"
+  },
   "bugs": {
     "url": "https://github.com/acquia/ember-http-hmac/issues"
   },
