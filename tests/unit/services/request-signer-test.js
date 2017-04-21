@@ -73,7 +73,7 @@ test('it requires signer configuration.', function(assert) {
 
   try {
     service.signRequest();
-  } catch (e) {
+  } catch(e) {
     assert.ok(true, 'Sign request throws an error when the signer is not initialized.');
   }
 });
@@ -84,7 +84,7 @@ test('it signs a request without special headers.', function(assert) {
   let signerMock = {
     sign(params) {
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
-      assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
       assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
     }
   };
@@ -98,7 +98,7 @@ test('it includes signed headers when present.', function(assert) {
   let signerMock = {
     sign(params) {
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
-      assert.deepEqual(params.signed_headers, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.deepEqual(params.signed_headers, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // eslint-disable-line camelcase
       assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
     }
   };
@@ -117,7 +117,7 @@ test('it signs requests when signed headers are not present.', function(assert) 
   let signerMock = {
     sign(params) {
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
-      assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
       assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
     }
   };
@@ -175,8 +175,8 @@ test('it sends headers when available and configured', function(assert) {
     sign(params) {
       assert.ok(true, 'Signer was invoked before send.');
       assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign.');
-      assert.equal(params.signed_headers['marvin-suggs'], 'owwww', 'Signed header value was sent.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-      assert.notOk(params.signed_headers['mahna-mahna'], 'Unsigned header value was not sent.'); // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      assert.equal(params.signed_headers['marvin-suggs'], 'owwww', 'Signed header value was sent.'); // eslint-disable-line camelcase
+      assert.notOk(params.signed_headers['mahna-mahna'], 'Unsigned header value was not sent.'); // eslint-disable-line camelcase
     }
   };
 

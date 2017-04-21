@@ -7,7 +7,7 @@ let App;
 
 Ember.MODEL_FACTORY_INJECTIONS = true;
 
-App = Ember.Application.extend({ // jscs:ignore disallowDirectPropertyAccess
+App = Ember.Application.extend({ // eslint-disable-line
   modulePrefix: config.modulePrefix,
   podModulePrefix: config.podModulePrefix,
   Resolver

@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import config from './config/environment';
 
-const Router = Ember.Router.extend({ // jscs:ignore disallowDirectPropertyAccess
+const Router = Ember.Router.extend({ // eslint-disable-line
   location: config.locationType,
   rootURL: config.rootURL
 });

@@ -124,13 +124,13 @@ export default Service.extend({
     assert('The public key must be populated for http hmac authentication', !isEmpty(publicKey));
     assert('The private key must be populated for http hmac authentication', !isEmpty(secretKey));
 
-    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+    /* eslint-disable camelcase */
     let config = {
       realm,
       public_key: publicKey,
       secret_key: secretKey
     };
-    // jscs:enable
+    /* eslint-enable */
 
     let signer = new AcquiaHttpHmac(config);
     this.set('signer', signer);
@@ -155,7 +155,7 @@ export default Service.extend({
       method: hash.type || 'GET'
     };
     if (hash.hasOwnProperty('contentType')) {
-      signParameters.content_type = hash.contentType; // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+      signParameters.content_type = hash.contentType; // eslint-disable-line camelcase
     }
 
     hash.beforeSend = (jqXhr, settings) => {
@@ -165,7 +165,7 @@ export default Service.extend({
       }
       try {
         this.signRequest(jqXhr, signParameters, headers);
-      } catch (e) {
+      } catch(e) {
         return false;
       }
 
@@ -194,7 +194,7 @@ export default Service.extend({
     }
     let signedHeaders = this.get('signedHeaders');
     params.request = jqXhr;
-    // jscs: disable requireCamelCaseOrUpperCaseIdentifiers
+    /* eslint-disable camelcase */
     if (!isEmpty(headers) && !isEmpty(signedHeaders)) {
       params.signed_headers = {};
       signedHeaders.forEach((headerName) => {
@@ -203,7 +203,7 @@ export default Service.extend({
         }
       });
     }
-    // jscs: enable
+    /* eslint-enable camelcase */
     signer.sign(params);
   },
 
