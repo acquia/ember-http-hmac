@@ -1,6 +1,6 @@
 {
   "name": "ember-http-hmac",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Provides an Ember wrapper around Acquia's http-hmac-javascript library.",
   "directories": {
     "doc": "doc",
