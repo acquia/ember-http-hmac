@@ -74,7 +74,6 @@ This addon can be installed via standard ember addon installation procedures:
 # To Dos
 * Create a test helper to register support
 * Add configuration to disable signed headers
-* Add configuration to enable/disable per environment
 
 # For Development
 
