@@ -1,6 +1,6 @@
 {
   "name": "ember-http-hmac",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Provides an Ember wrapper around Acquia's http-hmac-javascript library.",
   "directories": {
     "doc": "doc",
@@ -13,7 +13,7 @@
   },
   "repository": "acquia/ember-http-hmac",
   "engines": {
-    "node": ">= 4"
+    "node": "^4.5 || 6.* || >= 7.*"
   },
   "author": {
     "name": "Acquia Engineering",
@@ -60,9 +60,6 @@
     "http-hmac",
     "acquia"
   ],
-  "engines": {
-    "node": "^4.5 || 6.* || >= 7.*"
-  },
   "ember-addon": {
     "configPath": "tests/dummy/config"
   }
