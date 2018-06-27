@@ -1,11 +1,8 @@
-import Ember from 'ember';
+import { assert } from '@ember/debug';
+import { computed } from '@ember/object';
+import { isEmpty } from '@ember/utils';
+import Service from '@ember/service';
 const { AcquiaHttpHmac } = window;
-const {
-  assert,
-  computed,
-  isEmpty,
-  Service
-} = Ember;
 
 export default Service.extend({
   /**

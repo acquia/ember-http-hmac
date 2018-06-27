@@ -1,11 +1,9 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import Pretender from 'pretender';
 import { test, module } from 'qunit';
 import SignedAjax from 'ember-http-hmac/services/signed-ajax';
 import RequestSigner from 'ember-http-hmac/services/request-signer';
 import { jsonResponse } from '../../helpers/json';
-
-const { run } = Ember;
 
 let service, server;
 module('Unit | Services | signed-ajax', {

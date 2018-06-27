@@ -1,11 +1,7 @@
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import HmacAdapterMixin from 'ember-http-hmac/mixins/hmac-adapter-mixin';
 import { module, test } from 'qunit';
 import RequestSigner from 'ember-http-hmac/services/request-signer';
-
-const {
-  Object: EmberObject
-} = Ember;
 
 module('Unit | Mixins | hmac-adapter-mixin');
 
