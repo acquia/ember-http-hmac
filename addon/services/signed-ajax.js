@@ -1,7 +1,5 @@
+import { inject as service } from '@ember/service';
 import AjaxService from 'ember-ajax/services/ajax';
-import Ember from 'ember';
-
-const { inject } = Ember;
 
 // Extends the Ajax service to automatically sign all requests.
 // @todo  handle signature validation upon response - probably use jQuery success
@@ -12,7 +10,7 @@ export default AjaxService.extend({
    * @type {Ember.Service}
    * @public
    */
-  requestSigner: inject.service(),
+  requestSigner: service(),
 
   /**
    * Overrides the Ajax.request method to attach a signing beforeSend callback

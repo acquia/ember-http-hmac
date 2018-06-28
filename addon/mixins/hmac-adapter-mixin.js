@@ -1,9 +1,5 @@
-import Ember from 'ember';
-
-const {
-  inject,
-  Mixin
-} = Ember;
+import { inject as service } from '@ember/service';
+import Mixin from '@ember/object/mixin';
 
 // This mixin provides http-hmac signing capabilities to an ember-data adapter.
 // @todo : Implement response validation once there is access to the jqXHR
@@ -15,7 +11,7 @@ export default Mixin.create({
    * @type {Ember.Service}
    * @public
    */
-  requestSigner: inject.service(),
+  requestSigner: service(),
 
   /**
    * Overrides the adapter's ajax options to add custom signing functionality.
