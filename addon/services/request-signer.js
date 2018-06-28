@@ -99,7 +99,14 @@ export default Service.extend({
    * @type {Array}
    * @public
    */
-  signedHeaders: [],
+  signedHeaders: null,
+
+  init() {
+    this._super(...arguments);
+
+
+    this.signedHeaders = [];
+  },
 
   /**
    * Sets up the signer with the required configuration.

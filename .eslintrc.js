@@ -49,7 +49,10 @@ module.exports = {
       excludedFiles: ['tests/dummy/**/*.js'],
       env: {
         embertest: true
-      }
+      },
+      rules: {
+        'ember/avoid-leaking-state-in-ember-objects': [1, ['include']]
+      },
     }
   ]
 };
