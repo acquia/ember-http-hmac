@@ -2,14 +2,6 @@
   "name": "ember-http-hmac",
   "version": "1.3.1",
   "description": "Provides an Ember wrapper around Acquia's http-hmac-javascript library.",
-  "author": {
-    "name": "Acquia Engineering",
-    "email": "engineering@acquia.com"
-  },
-  "directories": {
-    "doc": "doc",
-    "test": "tests"
-  },
   "scripts": {
     "build": "ember build",
     "lint:hbs": "ember-template-lint .",
@@ -21,7 +13,6 @@
   "engines": {
     "node": "8.* || >= 10.*"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/acquia/ember-http-hmac/issues"
   },
@@ -30,17 +21,15 @@
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "crypto-js": "^3.1.6",
-    "ember-cli-babel": "~7.13.0",
+    "ember-cli-babel": "^7.13.0",
     "ember-cli-htmlbars": "^4.2.0",
     "http-hmac-javascript": "0.2.4"
   },
   "devDependencies": {
-    "@ember/jquery": "^1.1.0",
-    "@ember/optional-features": "^1.3.0",
+    "@ember/optional-features": "^1.1.0",
     "@glimmer/component": "^1.0.0",
     "babel-eslint": "^10.0.3",
     "broccoli-asset-rev": "^3.0.0",
-    "ember-ajax": "^5.0.0",
     "ember-auto-import": "^1.5.3",
     "ember-cli": "~3.15.2",
     "ember-cli-dependency-checker": "^3.2.0",
@@ -73,6 +62,15 @@
     "acquia"
   ],
   "repository": "acquia/ember-http-hmac",
+  "license": "MIT",
+  "author": {
+    "name": "Acquia Engineering",
+    "email": "engineering@acquia.com"
+  },
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
   "ember": {
     "edition": "octane"
   },
