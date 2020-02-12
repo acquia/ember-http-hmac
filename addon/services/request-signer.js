@@ -153,29 +153,21 @@ export default Service.extend({
       hash = {};
     }
 
-    let { beforeSend } = hash;
-    let signParameters = {
-      method: hash.type || 'GET'
-    };
-    if (hash.hasOwnProperty('contentType')) {
-      signParameters.content_type = hash.contentType; // eslint-disable-line camelcase
+    let signer = this.get('signer');
+    if (isEmpty(signer)) {
+      signer = this.initializeSigner();
     }
 
-    hash.beforeSend = (jqXhr, settings) => {
-      signParameters.path = settings.url;
-      if (!isEmpty(settings.data)) {
-        signParameters.body = settings.data;
-      }
-      try {
-        this.signRequest(jqXhr, signParameters, headers);
-      } catch(e) {
-        return false;
-      }
-
-      if (beforeSend) {
-        beforeSend(jqXhr, settings);
-      }
+    const signParameters = {
+      method: hash.type || 'GET',
+      path: hash.url,
+      ...(hash.hasOwnProperty('contentType')) && { contentType: hash.contentType },  // eslint-disable-line camelcase
+      ...(!isEmpty(hash.data)) && { body: hash.data } 
     };
+
+    const signedHeaders = signer.getHeaders(signParameters);
+
+    hash.headers = Object.assign(headers, signedHeaders);
     return hash;
   },
 
