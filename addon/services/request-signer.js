@@ -157,49 +157,31 @@ export default Service.extend({
     if (isEmpty(signer)) {
       signer = this.initializeSigner();
     }
+    const configSignedHeaders = this.get('signedHeaders');
+    const requiredSignedHeaders = {};
 
+    /* eslint-disable camelcase */
+    if (!isEmpty(headers) && !isEmpty(configSignedHeaders)) {
+      configSignedHeaders.forEach((headerName) => {
+        if (headers.hasOwnProperty(headerName)) {
+          requiredSignedHeaders[headerName] = headers[headerName];
+        }
+      });
+    }
+    
+    /* eslint-enable camelcase */
     const signParameters = {
       method: hash.type || 'GET',
       path: hash.url,
       ...(hash.hasOwnProperty('contentType')) && { contentType: hash.contentType },  // eslint-disable-line camelcase
-      ...(!isEmpty(hash.data)) && { body: hash.data } 
+      ...(!isEmpty(hash.data)) && { body: hash.data },
+      signed_headers: requiredSignedHeaders,
     };
 
     const signedHeaders = signer.getHeaders(signParameters);
 
     hash.headers = Object.assign(headers, signedHeaders);
     return hash;
-  },
-
-  /**
-   * Signs a request.
-   * @method  signRequest
-   * @public
-   * @param  {Object} jqXhr  The jQuery jqXHR object that wraps the XMLHttpRequest
-   * @param  {Object} params Signing parameters required by the http-hmac library
-   *                         - method: the request method (verb)
-   *                         - path: The url for the request
-   *                         - content_type: The contentText for the request (optional)
-   * @param {Object} headers An object of headers for the request.
-   */
-  signRequest(jqXhr, params, headers) {
-    let signer = this.get('signer');
-    if (isEmpty(signer)) {
-      signer = this.initializeSigner();
-    }
-    let signedHeaders = this.get('signedHeaders');
-    params.request = jqXhr;
-    /* eslint-disable camelcase */
-    if (!isEmpty(headers) && !isEmpty(signedHeaders)) {
-      params.signed_headers = {};
-      signedHeaders.forEach((headerName) => {
-        if (headers.hasOwnProperty(headerName)) {
-          params.signed_headers[headerName] = headers[headerName];
-        }
-      });
-    }
-    /* eslint-enable camelcase */
-    signer.sign(params);
   },
 
   /**

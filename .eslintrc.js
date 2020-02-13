@@ -62,7 +62,6 @@ module.exports = {
       },
       rules: {
         'ember/avoid-leaking-state-in-ember-objects': [1, ['include']],
-        'ember/no-new-mixins': 'off'
       },
     }
   ]
