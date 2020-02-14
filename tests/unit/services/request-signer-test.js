@@ -76,25 +76,23 @@ module('Unit | Services | request-signer', function(hooks) {
   });
 
   test('it signs a request without special headers.', function(assert) {
-    assert.expect(3);
+    assert.expect(2);
 
     let signerMock = {
-      sign(params) {
-        assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
+      getHeaders(params) {
         assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
       }
     };
     service.set('signer', signerMock);
-    service.signRequest('mock-jqxhr', { foo: 'bar' }, { 'header-1': 'header-value' });
+    service.updateAjaxOptions({ foo: 'bar' }, { 'header-1': 'header-value' });
   });
 
   test('it includes signed headers when present.', function(assert) {
-    assert.expect(3);
+    assert.expect(2);
 
     let signerMock = {
-      sign(params) {
-        assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
+      getHeaders(params) {
         assert.deepEqual(params.signed_headers, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
       }
@@ -105,63 +103,44 @@ module('Unit | Services | request-signer', function(hooks) {
       'header-1': 'header-1-value',
       'my-signed-header': 'my-signed-header-value'
     };
-    service.signRequest('mock-jqxhr', { foo: 'bar' }, headers);
+    service.updateAjaxOptions({ foo: 'bar' }, headers);
   });
 
   test('it signs requests when signed headers are not present.', function(assert) {
-    assert.expect(3);
+    assert.expect(2);
 
     let signerMock = {
-      sign(params) {
-        assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign');
+      getHeaders(params) {
         assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
       }
     };
     service.set('signer', signerMock);
-    service.set('signedHeader', ['my-signed-header']);
+    service.set('signedHeaders', ['my-signed-header']);
     let headers = {
       'header-1': 'header-1-value'
     };
-    service.signRequest('mock-jqxhr', { foo: 'bar' }, headers);
+    service.updateAjaxOptions({ foo: 'bar' }, headers);
   });
 
-  test('it can add signing to beforeSend', function(assert) {
-    assert.expect(5);
 
-    let signerMock = {
-      sign(params) {
-        assert.ok(true, 'Signer was invoked before send.');
-        assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign.');
-        assert.equal(params.path, 'test-url', 'URL was sent as a parameter to sign.');
-        assert.equal(params.method, 'GET', 'It sends the default method to signer.');
-      }
-    };
-
-    service.set('signer', signerMock);
-    let hash = service.updateAjaxOptions();
-    assert.ok(hash.beforeSend, 'Before send function was added to hash');
-    hash.beforeSend('mock-jqxhr', { url: 'test-url' });
-  });
 
   test('it sends content type to signer when available', function(assert) {
-    assert.expect(3);
+    assert.expect(2);
 
     let signerMock = {
-      sign(params) {
+      getHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.method, 'POST', 'It sends the content type to signer.');
       }
     };
 
     service.set('signer', signerMock);
-    let hash = service.updateAjaxOptions({ type: 'POST' });
-    assert.ok(hash.beforeSend, 'Before send function was added to hash');
-    hash.beforeSend('mock-jqxhr', { url: 'test-url' });
+    service.updateAjaxOptions({ type: 'POST', url: 'test-url' });
   });
 
   test('it sends headers when available and configured', function(assert) {
-    assert.expect(5);
+    assert.expect(3);
 
     let allHeaders = {
       'mahna-mahna': 'dodoodododo',
@@ -169,9 +148,8 @@ module('Unit | Services | request-signer', function(hooks) {
     };
 
     let signerMock = {
-      sign(params) {
+      getHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
-        assert.equal(params.request, 'mock-jqxhr', 'Request was passed as a parameter to sign.');
         assert.equal(params.signed_headers['marvin-suggs'], 'owwww', 'Signed header value was sent.'); // eslint-disable-line camelcase
         assert.notOk(params.signed_headers['mahna-mahna'], 'Unsigned header value was not sent.'); // eslint-disable-line camelcase
       }
@@ -179,56 +157,21 @@ module('Unit | Services | request-signer', function(hooks) {
 
     service.set('signer', signerMock);
     service.set('signedHeaders', ['marvin-suggs']);
-    let hash = service.updateAjaxOptions({}, allHeaders);
-    assert.ok(hash.beforeSend, 'Before send function was added to hash');
-    hash.beforeSend('mock-jqxhr', { url: 'test-url' });
+    service.updateAjaxOptions({}, allHeaders);
   });
 
   test('it sends body when available', function(assert) {
-    assert.expect(3);
+    assert.expect(2);
 
-    let signerMock = {
-      sign(params) {
+    const signerMock = {
+      getHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.body, 'moving right along', 'It sends the body to signer.');
       }
     };
+    const requestOptions = { url: 'test-url', data: 'moving right along' };
 
     service.set('signer', signerMock);
-    let hash = service.updateAjaxOptions();
-    assert.ok(hash.beforeSend, 'Before send function was added to hash');
-    hash.beforeSend('mock-jqxhr', { url: 'test-url', data: 'moving right along' });
-  });
-
-  test('it preserves existing beforeSend callback', function(assert) {
-    let hash = {
-      beforeSend(jqXHR, settings) {
-        assert.ok(true, 'The pre-existing beforeSend callback was called.');
-        assert.equal(jqXHR, 'mock-jqxhr', 'The request was passed to the callback.');
-        assert.deepEqual(settings, { url: 'my-url' }, 'The settings were passed to the callback.');
-      }
-    };
-    let signerMock = {
-      sign() {
-        assert.ok(true, 'Signer was invoked before send.');
-      }
-    };
-    service.set('signer', signerMock);
-    service.updateAjaxOptions(hash);
-    hash.beforeSend('mock-jqxhr', { url: 'my-url' });
-  });
-
-  test('it can validate the response from a request.', function(assert) {
-    assert.expect(2);
-
-    let signerMock = {
-      hasValidResponse(request) {
-        assert.equal(request, 'mock-jqxhr', 'Request was passed for validation.');
-        return true;
-      }
-    };
-    service.set('signer', signerMock);
-    let valid = service.validateResponse('mock-jqxhr');
-    assert.ok(valid, 'Signer response was passed through from request signer service.');
+    service.updateAjaxOptions(requestOptions);
   });
 });

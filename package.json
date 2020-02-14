@@ -23,7 +23,7 @@
     "crypto-js": "^3.1.6",
     "ember-cli-babel": "^7.13.0",
     "ember-cli-htmlbars": "^4.2.0",
-    "http-hmac-javascript": "0.2.4",
+    "http-hmac-javascript": "git+https://github.com/acquia/http-hmac-javascript.git#LEB-3743",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {

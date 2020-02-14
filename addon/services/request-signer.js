@@ -149,6 +149,7 @@ export default Service.extend({
    * @return {Object} The updated hash - also modified by reference.
    */
   updateAjaxOptions(hash, headers) {
+    headers = headers || {};
     if (!hash) {
       hash = {};
     }
@@ -168,15 +169,26 @@ export default Service.extend({
         }
       });
     }
-    
+
+    const requiresHeaders = Object.keys(requiredSignedHeaders).length >= 1;
+
+    const standardProperties = ['method', 'contentType', 'path', 'body', 'signed_headers'];
+
     /* eslint-enable camelcase */
     const signParameters = {
       method: hash.type || 'GET',
       path: hash.url,
       ...(hash.hasOwnProperty('contentType')) && { contentType: hash.contentType },  // eslint-disable-line camelcase
       ...(!isEmpty(hash.data)) && { body: hash.data },
-      signed_headers: requiredSignedHeaders,
+      ...requiresHeaders && { signed_headers: requiredSignedHeaders },
     };
+
+    // Allow additional parameters to pass through.
+    Object.keys(hash).forEach((propertyName) => {
+      if(!standardProperties.includes(propertyName)) {
+        signParameters[propertyName]=hash[propertyName];
+      }
+    })
 
     const signedHeaders = signer.getHeaders(signParameters);
 
