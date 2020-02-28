@@ -172,13 +172,13 @@ export default Service.extend({
 
     const requiresHeaders = Object.keys(requiredSignedHeaders).length >= 1;
 
-    const standardProperties = ['method', 'contentType', 'path', 'body', 'signed_headers'];
+    const standardProperties = ['method', 'contentType', 'path', 'body'];
 
     /* eslint-enable camelcase */
     const signParameters = {
       method: hash.type || 'GET',
       path: hash.url,
-      ...(hash.hasOwnProperty('contentType')) && { contentType: hash.contentType },  // eslint-disable-line camelcase
+      ...(hash.hasOwnProperty('contentType')) && { content_type: hash.contentType },  // eslint-disable-line camelcase
       ...(!isEmpty(hash.data)) && { body: hash.data },
       ...requiresHeaders && { signed_headers: requiredSignedHeaders },
     };
