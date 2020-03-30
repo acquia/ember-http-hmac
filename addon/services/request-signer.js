@@ -149,65 +149,51 @@ export default Service.extend({
    * @return {Object} The updated hash - also modified by reference.
    */
   updateAjaxOptions(hash, headers) {
+    headers = headers || {};
     if (!hash) {
       hash = {};
     }
 
-    let { beforeSend } = hash;
-    let signParameters = {
-      method: hash.type || 'GET'
-    };
-    if (hash.hasOwnProperty('contentType')) {
-      signParameters.content_type = hash.contentType; // eslint-disable-line camelcase
-    }
-
-    hash.beforeSend = (jqXhr, settings) => {
-      signParameters.path = settings.url;
-      if (!isEmpty(settings.data)) {
-        signParameters.body = settings.data;
-      }
-      try {
-        this.signRequest(jqXhr, signParameters, headers);
-      } catch(e) {
-        return false;
-      }
-
-      if (beforeSend) {
-        beforeSend(jqXhr, settings);
-      }
-    };
-    return hash;
-  },
-
-  /**
-   * Signs a request.
-   * @method  signRequest
-   * @public
-   * @param  {Object} jqXhr  The jQuery jqXHR object that wraps the XMLHttpRequest
-   * @param  {Object} params Signing parameters required by the http-hmac library
-   *                         - method: the request method (verb)
-   *                         - path: The url for the request
-   *                         - content_type: The contentText for the request (optional)
-   * @param {Object} headers An object of headers for the request.
-   */
-  signRequest(jqXhr, params, headers) {
     let signer = this.get('signer');
     if (isEmpty(signer)) {
       signer = this.initializeSigner();
     }
-    let signedHeaders = this.get('signedHeaders');
-    params.request = jqXhr;
+    const configSignedHeaders = this.get('signedHeaders');
+    const requiredSignedHeaders = {};
+
     /* eslint-disable camelcase */
-    if (!isEmpty(headers) && !isEmpty(signedHeaders)) {
-      params.signed_headers = {};
-      signedHeaders.forEach((headerName) => {
+    if (!isEmpty(headers) && !isEmpty(configSignedHeaders)) {
+      configSignedHeaders.forEach((headerName) => {
         if (headers.hasOwnProperty(headerName)) {
-          params.signed_headers[headerName] = headers[headerName];
+          requiredSignedHeaders[headerName] = headers[headerName];
         }
       });
     }
+
+    const requiresHeaders = Object.keys(requiredSignedHeaders).length >= 1;
+
+    const standardProperties = ['method', 'contentType', 'path', 'body'];
+
     /* eslint-enable camelcase */
-    signer.sign(params);
+    const signParameters = {
+      method: hash.type || 'GET',
+      path: hash.url,
+      ...(hash.hasOwnProperty('contentType')) && { content_type: hash.contentType },  // eslint-disable-line camelcase
+      ...(!isEmpty(hash.data)) && { body: hash.data },
+      ...requiresHeaders && { signed_headers: requiredSignedHeaders },
+    };
+
+    // Allow additional parameters to pass through.
+    Object.keys(hash).forEach((propertyName) => {
+      if(!standardProperties.includes(propertyName)) {
+        signParameters[propertyName]=hash[propertyName];
+      }
+    })
+
+    const signedHeaders = signer.getHeaders(signParameters);
+
+    hash.headers = Object.assign(headers, signedHeaders);
+    return hash;
   },
 
   /**
