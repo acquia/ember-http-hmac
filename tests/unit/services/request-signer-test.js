@@ -126,8 +126,6 @@ module('Unit | Services | request-signer', function(hooks) {
     service.updateAjaxOptions({ foo: 'bar' }, headers);
   });
 
-
-
   test('it sends content type to signer when available', function(assert) {
     assert.expect(2);
 
@@ -180,4 +178,57 @@ module('Unit | Services | request-signer', function(hooks) {
     service.set('signer', signerMock);
     service.updateAjaxOptions(requestOptions);
   });
+
+  test('it does not validate without a configured signer', function(assert) {
+    assert.expect(1);
+    const validText = 'I am the response text';
+    const allHeaders = {
+      'mahna-mahna': 'dodoodododo',
+      'marvin-suggs': 'owwww'
+    };
+    const validNonce = '4gavsdn29432cnpvgfdg';
+    const validTimestamp = 1346048064;
+    const mockResponse = {
+      headers: allHeaders,
+      text() {
+        return Promise.resolve(validText);
+      },
+    };
+
+    service.set('signer', undefined);
+    try {
+      service.validateResponse(mockResponse, validNonce, validTimestamp)
+    } catch (e) {
+      assert.ok(/The signer must be configured/.test(e.message), 'The assertion is raised.');
+    }
+  });
+
+  test('it validates the response', async function(assert) {
+    assert.expect(4);
+
+    const validText = 'I am the response text';
+    const allHeaders = {
+      'mahna-mahna': 'dodoodododo',
+      'marvin-suggs': 'owwww'
+    };
+    const validNonce = '4gavsdn29432cnpvgfdg';
+    const validTimestamp = 1346048064;
+    const signerMock = {
+      hasValidFetchResponse(text, headers, nonce, timestamp) {
+        assert.equal(text, validText, 'The response text is passed.');
+        assert.equal(headers, allHeaders, 'The headers are passed.');
+        assert.equal(nonce, validNonce, 'The nonce is passed.');
+        assert.equal(timestamp, validTimestamp, 'The timestamp is passed.');
+      },
+    };
+    const mockResponse = {
+      headers: allHeaders,
+      text() {
+        return Promise.resolve(validText);
+      },
+    };
+
+    service.set('signer', signerMock);
+    await service.validateResponse(mockResponse, validNonce, validTimestamp);
+  })
 });

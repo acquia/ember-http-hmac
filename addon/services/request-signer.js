@@ -201,14 +201,19 @@ export default Service.extend({
    * Validates a response from the server.
    * @method  validateResponse
    * @public
-   * @param {Object} request: The jQuery jqXHR request sent.
+   * @param {Response} fetchResponse   The Fetch Response received.
+   * @param {String} nonce             The nonce used to sign the Fetch Request.
+   * @param {String} timestamp         The timestamp used to sign the Fetch Request.
    * @return {Promise} the promise resolves with `true` if valid, or `false` otherwise.
    */
   validateResponse(fetchResponse, nonce, timestamp) {
-    assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(this.signer));
+    const signer = this.get('signer');
+
+    assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(signer));
+
     return fetchResponse.text()
-      .then(function(text) {
-        return this.get('signer').hasValidFetchResponse(
+      .then((text) => {
+        return signer.hasValidFetchResponse(
           text,
           fetchResponse.headers,
           nonce,
