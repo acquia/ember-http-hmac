@@ -202,10 +202,18 @@ export default Service.extend({
    * @method  validateResponse
    * @public
    * @param {Object} request: The jQuery jqXHR request sent.
-   * @return {boolean} True if valid, false otherwise.
+   * @return {Promise} the promise resolves with `true` if valid, or `false` otherwise.
    */
-  validateResponse(request) {
+  validateResponse(fetchResponse, nonce, timestamp) {
     assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(this.signer));
-    return this.get('signer').hasValidResponse(request);
+    return fetchResponse.text()
+      .then(function(text) {
+        return this.get('signer').hasValidFetchResponse(
+          text,
+          fetchResponse.headers,
+          nonce,
+          timestamp,
+        );
+      });
   }
 });
