@@ -79,9 +79,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
+        return {};
       }
     };
     service.set('signer', signerMock);
@@ -92,9 +93,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.deepEqual(params.signed_headers, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
+        return {};
       }
     };
     service.set('signer', signerMock);
@@ -110,9 +112,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
+        return {};
       }
     };
     service.set('signer', signerMock);
@@ -129,9 +132,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.method, 'POST', 'It sends the content type to signer.');
+        return {};
       }
     };
 
@@ -148,10 +152,11 @@ module('Unit | Services | request-signer', function(hooks) {
     };
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.signed_headers['marvin-suggs'], 'owwww', 'Signed header value was sent.'); // eslint-disable-line camelcase
         assert.notOk(params.signed_headers['mahna-mahna'], 'Unsigned header value was not sent.'); // eslint-disable-line camelcase
+        return {};
       }
     };
 
@@ -164,9 +169,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     const signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.body, 'moving right along', 'It sends the body to signer.');
+        return {};
       }
     };
     const requestOptions = { url: 'test-url', data: 'moving right along' };

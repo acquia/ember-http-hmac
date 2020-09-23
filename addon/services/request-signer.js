@@ -186,13 +186,14 @@ export default Service.extend({
     // Allow additional parameters to pass through.
     Object.keys(hash).forEach((propertyName) => {
       if(!standardProperties.includes(propertyName)) {
-        signParameters[propertyName]=hash[propertyName];
+        signParameters[propertyName] = hash[propertyName];
       }
     })
 
-    const signedHeaders = signer.getHeaders(signParameters);
+    const { headers:signedHeaders, nonce, timestamp } = signer.getFetchHeaders(signParameters);
 
     hash.headers = Object.assign(headers, signedHeaders);
+    Object.assign(hash, { nonce, timestamp });
     return hash;
   },
 
