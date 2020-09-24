@@ -79,9 +79,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
+        return {};
       }
     };
     service.set('signer', signerMock);
@@ -92,9 +93,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.deepEqual(params.signed_headers, { 'my-signed-header': 'my-signed-header-value' }, 'Signed headers were included'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
+        return {};
       }
     };
     service.set('signer', signerMock);
@@ -110,9 +112,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.notOk(params.signed_headers, 'No headers are included for the signature.'); // eslint-disable-line camelcase
         assert.equal(params.foo, 'bar', 'Additional parameters are passed through for signature.');
+        return {};
       }
     };
     service.set('signer', signerMock);
@@ -123,15 +126,14 @@ module('Unit | Services | request-signer', function(hooks) {
     service.updateAjaxOptions({ foo: 'bar' }, headers);
   });
 
-
-
   test('it sends content type to signer when available', function(assert) {
     assert.expect(2);
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.method, 'POST', 'It sends the content type to signer.');
+        return {};
       }
     };
 
@@ -148,10 +150,11 @@ module('Unit | Services | request-signer', function(hooks) {
     };
 
     let signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.signed_headers['marvin-suggs'], 'owwww', 'Signed header value was sent.'); // eslint-disable-line camelcase
         assert.notOk(params.signed_headers['mahna-mahna'], 'Unsigned header value was not sent.'); // eslint-disable-line camelcase
+        return {};
       }
     };
 
@@ -164,9 +167,10 @@ module('Unit | Services | request-signer', function(hooks) {
     assert.expect(2);
 
     const signerMock = {
-      getHeaders(params) {
+      getFetchHeaders(params) {
         assert.ok(true, 'Signer was invoked before send.');
         assert.equal(params.body, 'moving right along', 'It sends the body to signer.');
+        return {};
       }
     };
     const requestOptions = { url: 'test-url', data: 'moving right along' };
@@ -174,4 +178,51 @@ module('Unit | Services | request-signer', function(hooks) {
     service.set('signer', signerMock);
     service.updateAjaxOptions(requestOptions);
   });
+
+  test('it does not validate without a configured signer', function(assert) {
+    assert.expect(1);
+    const validText = 'I am the response text';
+    const allHeaders = {
+      'mahna-mahna': 'dodoodododo',
+      'marvin-suggs': 'owwww'
+    };
+    const validNonce = '4gavsdn29432cnpvgfdg';
+    const validTimestamp = 1346048064;
+    const mockResponse = {
+      headers: allHeaders,
+      text() {
+        return Promise.resolve(validText);
+      },
+    };
+
+    service.set('signer', undefined);
+    try {
+      service.validateResponse(mockResponse, validNonce, validTimestamp)
+    } catch (e) {
+      assert.ok(/The signer must be configured/.test(e.message), 'The assertion is raised.');
+    }
+  });
+
+  test('it validates the response', async function(assert) {
+    assert.expect(4);
+
+    const validText = 'I am the response text';
+    const allHeaders = {
+      'mahna-mahna': 'dodoodododo',
+      'marvin-suggs': 'owwww'
+    };
+    const validNonce = '4gavsdn29432cnpvgfdg';
+    const validTimestamp = 1346048064;
+    const signerMock = {
+      hasValidFetchResponse(text, headers, nonce, timestamp) {
+        assert.equal(text, validText, 'The response text is passed.');
+        assert.equal(headers, allHeaders, 'The headers are passed.');
+        assert.equal(nonce, validNonce, 'The nonce is passed.');
+        assert.equal(timestamp, validTimestamp, 'The timestamp is passed.');
+      },
+    };
+
+    service.set('signer', signerMock);
+    await service.validateResponse(validText, allHeaders, validNonce, validTimestamp);
+  })
 });

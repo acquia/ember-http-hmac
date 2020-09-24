@@ -186,13 +186,14 @@ export default Service.extend({
     // Allow additional parameters to pass through.
     Object.keys(hash).forEach((propertyName) => {
       if(!standardProperties.includes(propertyName)) {
-        signParameters[propertyName]=hash[propertyName];
+        signParameters[propertyName] = hash[propertyName];
       }
     })
 
-    const signedHeaders = signer.getHeaders(signParameters);
+    const { headers:signedHeaders, nonce, timestamp } = signer.getFetchHeaders(signParameters);
 
     hash.headers = Object.assign(headers, signedHeaders);
+    Object.assign(hash, { nonce, timestamp });
     return hash;
   },
 
@@ -200,11 +201,22 @@ export default Service.extend({
    * Validates a response from the server.
    * @method  validateResponse
    * @public
-   * @param {Object} request: The jQuery jqXHR request sent.
-   * @return {boolean} True if valid, false otherwise.
+   * @param {String} responseText   The response as text from the Fetch Response.
+   * @param {Object} headers        The headers from the Fetch Response.
+   * @param {String} nonce          The nonce used to sign the Fetch Request.
+   * @param {String} timestamp      The timestamp used to sign the Fetch Request.
+   * @return {Promise} the promise resolves with `true` if valid, or `false` otherwise.
    */
-  validateResponse(request) {
-    assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(this.signer));
-    return this.get('signer').hasValidResponse(request);
+  validateResponse(responseText, headers, nonce, timestamp) {
+    const signer = this.get('signer');
+
+    assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(signer));
+
+    return signer.hasValidFetchResponse(
+      responseText,
+      headers,
+      nonce,
+      timestamp,
+    );
   }
 });
