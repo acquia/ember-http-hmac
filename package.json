@@ -1,6 +1,6 @@
 {
   "name": "ember-http-hmac",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Provides an Ember wrapper around Acquia's http-hmac-javascript library.",
   "scripts": {
     "build": "ember build",
@@ -23,7 +23,7 @@
     "crypto-js": "^3.1.6",
     "ember-cli-babel": "^7.13.0",
     "ember-cli-htmlbars": "^4.2.0",
-    "http-hmac-javascript": "git+https://github.com/acquia/http-hmac-javascript.git#v0.3.0",
+    "http-hmac-javascript": "git+https://github.com/acquia/http-hmac-javascript.git#8d44eec25ace1da5cd4305f745ac4320fa57dfa1",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
