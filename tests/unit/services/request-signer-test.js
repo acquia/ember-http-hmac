@@ -221,14 +221,8 @@ module('Unit | Services | request-signer', function(hooks) {
         assert.equal(timestamp, validTimestamp, 'The timestamp is passed.');
       },
     };
-    const mockResponse = {
-      headers: allHeaders,
-      text() {
-        return Promise.resolve(validText);
-      },
-    };
 
     service.set('signer', signerMock);
-    await service.validateResponse(mockResponse, validNonce, validTimestamp);
+    await service.validateResponse(validText, allHeaders, validNonce, validTimestamp);
   })
 });

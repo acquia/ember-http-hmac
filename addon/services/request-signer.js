@@ -201,24 +201,22 @@ export default Service.extend({
    * Validates a response from the server.
    * @method  validateResponse
    * @public
-   * @param {Response} fetchResponse   The Fetch Response received.
-   * @param {String} nonce             The nonce used to sign the Fetch Request.
-   * @param {String} timestamp         The timestamp used to sign the Fetch Request.
+   * @param {String} responseText   The response as text from the Fetch Response.
+   * @param {Object} headers        The headers from the Fetch Response.
+   * @param {String} nonce          The nonce used to sign the Fetch Request.
+   * @param {String} timestamp      The timestamp used to sign the Fetch Request.
    * @return {Promise} the promise resolves with `true` if valid, or `false` otherwise.
    */
-  validateResponse(fetchResponse, nonce, timestamp) {
+  validateResponse(responseText, headers, nonce, timestamp) {
     const signer = this.get('signer');
 
     assert('The signer must be configured with initializeSigner prior to use.', !isEmpty(signer));
 
-    return fetchResponse.text()
-      .then((text) => {
-        return signer.hasValidFetchResponse(
-          text,
-          fetchResponse.headers,
-          nonce,
-          timestamp,
-        );
-      });
+    return signer.hasValidFetchResponse(
+      responseText,
+      headers,
+      nonce,
+      timestamp,
+    );
   }
 });
